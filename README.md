@@ -18,7 +18,7 @@ Welcome to the **FoldND-UnfoldND-ConvND Repository**, a Python-based implementat
 The repository is organized to promote clarity and ease of navigation. Below is an overview of the primary directories and their respective contents:
 
 ```
-conv-repo/
+FoldND-UnfoldND-ConvND/
 │
 ├── benchmarks/
 │   ├── conv.py
