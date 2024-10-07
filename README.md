@@ -1,4 +1,4 @@
-# ConvND Repository
+# FoldND-UnfoldND-ConvND Repository
 
 ## Introduction
 
@@ -113,21 +113,21 @@ Below is a basic example demonstrating how to utilize the `ConvND` module alongs
 
 ```python
 import torch
-from src.conv import ConvND
-from src.fold import FoldND, UnfoldND
+from src.conv import Conv
+from src.fold import Fold, Unfold
 
 # Define input dimensions: (batch_size, channels, depth, height, width)
 input_tensor = torch.randn(8, 3, 30, 64, 64)
 
 # Initialize FoldND and UnfoldND
-fold = FoldND(kernel_size=(3, 3, 3), stride=(1, 1, 1), padding=(1, 1, 1), kernel_position="last")
-unfold = UnfoldND(kernel_size=(3, 3, 3), stride=(1, 1, 1), padding=(1, 1, 1))
+fold = Fold(kernel_size=(3, 3, 3), stride=(1, 1, 1), padding=(1, 1, 1), kernel_position="last")
+unfold = Unfold(kernel_size=(3, 3, 3), stride=(1, 1, 1), padding=(1, 1, 1))
 
 # Apply UnfoldND to the input tensor
 unfolded = unfold(input_tensor)
 
 # Initialize ConvND
-conv = ConvND(input_channels=3, output_channels=2, kernel_size=(3, 3, 3), stride=(1, 1, 1), padding=(1, 1, 1))
+conv = Conv(input_channels=3, output_channels=2, kernel_size=(3, 3, 3), stride=(1, 1, 1), padding=(1, 1, 1))
 
 # Perform convolution
 output = conv(unfolded)
