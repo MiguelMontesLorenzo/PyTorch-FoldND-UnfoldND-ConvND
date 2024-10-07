@@ -3,7 +3,6 @@
 # PyTorch dependencies
 import torch
 import torch.nn as nn
-
 from torch._tensor import Tensor
 from torch.nn.functional import pad
 

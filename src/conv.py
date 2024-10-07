@@ -18,6 +18,17 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 class Conv(nn.Module):
+    """
+    A class that implements an n-dimensional convolution operation. Unlike PyTorch's
+    native `torch.nn.Conv2d` and `torch.nn.Conv3d`, this implementation generalizes
+    the convolution process to arbitrary dimensions, providing greater flexibility in
+    feature space operations for n-dimensional inputs.
+
+    This class handles the convolution by combining `UnfoldND` (to unfold the input
+    tensor) with a generalized weight application using either Einstein summation
+    (`einsum`) or matrix multiplication (`matmul`), depending on the size of contracting
+    and non-contracting dimensions.
+    """
 
     def __init__(
         self,
@@ -30,6 +41,30 @@ class Conv(nn.Module):
         bias: bool = True,
         input_size: Optional[Tuple[int, ...]] = None,
     ) -> None:
+        """
+        Args:
+            input_channels (int):
+                Number of channels in the input tensor.
+            output_channels (int):
+                Number of output channels produced by the convolution.
+            kernel_size (tuple of int):
+                The size of the convolutional kernel for each dimension. This should
+                be a tuple of integers representing the size for each spatial dimension.
+            stride (int or tuple of int, optional):
+                The stride of the convolution. Default is 1.
+            padding (int or tuple of int, optional):
+                The amount of zero-padding added to both sides of each dimension of the
+                input. Default is 0.
+            dilation (int or tuple of int, optional):
+                The spacing between kernel elements. Default is 1.
+            bias (bool, optional):
+                If True, a learnable bias is added to the output. Default is True.
+            input_size (Optional[tuple of int], optional):
+                The size of the input tensor (excluding batch dimensions). If provided,
+                this enables pre-calculations during initialization that can speed up
+                the `forward` method. If not provided, these calculations will be
+                performed dynamically during the forward pass.
+        """
 
         # call super class constructor
         super(Conv, self).__init__()
