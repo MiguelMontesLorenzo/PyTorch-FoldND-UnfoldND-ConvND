@@ -15,7 +15,7 @@ Welcome to the **FoldND-UnfoldND-ConvND Repository**, a Python-based implementat
 
 ## File Structure
 
-The repository is organized to promote ease of navigation. Below is an overview of the primary directories and their respective contents:
+The repository is organized aiming for functional separation. Below is an overview of the primary directories and their respective contents:
 
 ```
 FoldND-UnfoldND-ConvND/
