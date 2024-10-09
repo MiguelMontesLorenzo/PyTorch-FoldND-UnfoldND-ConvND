@@ -195,7 +195,7 @@ To get started with the ConvND repository, follow these steps to set up your dev
 To evaluate the performance of the custom n-dimensional convolution against PyTorch's native convolution functions, navigate to the `benchmarks` directory and execute the benchmark script:
 
 ```bash
-python benchmarks/conv.py
+python -m benchmarks.conv
 ```
 
 This will output the execution times and performance ratios for both 2D and 3D convolution operations.
@@ -205,7 +205,7 @@ This will output the execution times and performance ratios for both 2D and 3D c
 Ensure that all modules are functioning correctly by running the test suites using `pytest`:
 
 ```bash
-pytest tests/
+pytest .
 ```
 
 ## Contributing
