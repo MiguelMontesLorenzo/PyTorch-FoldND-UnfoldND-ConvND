@@ -301,14 +301,8 @@ class Fold(nn.Module):
         slided_unfold.flatten().scatter_(0, self.indices[0], unfold.flatten())
         reshape: list[int] = [*batch_size, *self.kernel_size, *self.padded_size]
         slided_unfold = slided_unfold.view(reshape)
-
-        ones: Tensor = torch.ones(
-            size=slided_unfold.shape[bN:oN], dtype=unfold.dtype, device=input.device
-        )
-        idxUnf: list[int] = list(range(iN))
-        idxOne: list[int] = idxUnf[bN:oN]
-        idxOut: list[int] = idxUnf[:bN] + idxUnf[oN:iN]
-        fold: Tensor = torch.einsum(slided_unfold, idxUnf, ones, idxOne, idxOut)
+        dim_reduce: list[int] = list(range(bN, oN))
+        fold: Tensor = slided_unfold.sum(dim=dim_reduce)
 
         # unpad (if specified)
         if any([not p == 0 for p in self.padding]):
