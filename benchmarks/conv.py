@@ -18,7 +18,7 @@ def benchmark_convolutions_2d() -> None:
     Benchmark of the n-dimensional convolution (Conv) against PyTorch 2D convolution.
     """
     # Define sizes (batch_size, channels, height, width)
-    input_size: Tuple[int, ...] = (8, 3, 64, 64)
+    input_size: Tuple[int, ...] = (16, 3, 512, 512)
     kernel_size: Tuple[int, ...] = (3, 3)
     output_channels = 2
 
