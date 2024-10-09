@@ -149,7 +149,7 @@ To get started with the ConvND repository, follow these steps to set up your dev
 1. **Clone the Repository**
 
    ```bash
-   https://github.com/MiguelMontesLorenzo/FoldND-UnfoldND-ConvND.git
+   git clone https://github.com/MiguelMontesLorenzo/FoldND-UnfoldND-ConvND.git
    cd FoldND-UnfoldND-ConvND
    ```
 
