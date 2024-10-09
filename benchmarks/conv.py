@@ -15,21 +15,21 @@ from src.conv import Conv
 
 def benchmark_convolutions_2d() -> None:
     """
-    Benchmark de la convolución n-dimensional (Conv) frente a la convolución 2D de PyTorch.
+    Benchmark of the n-dimensional convolution (Conv) against PyTorch 2D convolution.
     """
-    # Definir tamaños (batch_size, channels, height, width)
+    # Define sizes (batch_size, channels, height, width)
     input_size: Tuple[int, ...] = (8, 3, 64, 64)
     kernel_size: Tuple[int, ...] = (3, 3)
     output_channels = 2
 
-    # Crear input
+    # Create input
     input: Tensor = torch.arange(
         1,
         int(torch.prod(torch.Tensor(input_size))) + 1,
         dtype=torch.float32,
     ).view(input_size)
 
-    # Crear instancia de ConvND
+    # Create ConvND instance
     conv: Conv = Conv(
         input_channels=input_size[1],
         output_channels=output_channels,
@@ -37,27 +37,29 @@ def benchmark_convolutions_2d() -> None:
         input_size=input_size,
     )
 
-    # Crear pesos y bias para conv2D
+    # Create weights and bias for conv2D
     conv2d_weight: Tensor = torch.randn(
         output_channels, input_size[1], *kernel_size, dtype=torch.float32
     )
     conv2d_bias: Tensor = torch.randn(output_channels, dtype=torch.float32)
 
-    # Establecer los mismos pesos y bias para ConvND y conv2D
+    # Set the same weights and bias to ConvND and conv2D
     conv.weight.data = conv2d_weight
     conv.bias.data = conv2d_bias
 
-    # Definir las ejecuciones del benchmark
+    # Define benchmark runs
     def run_convND_2d() -> None:
         conv(input)
+        return None
 
     def run_conv2d() -> None:
         F.conv2d(input, weight=conv2d_weight, bias=conv2d_bias)
+        return None
 
-    # Definir número de ejecuciones
+    # Define number of runs
     runs: int = 30
 
-    # Medir tiempos de convolución
+    # Measure convolution times
     conv_time: float = timeit.timeit(run_convND_2d, number=runs) / runs
     torch_conv_time: float = timeit.timeit(run_conv2d, number=runs) / runs
 
@@ -103,14 +105,16 @@ def benchmark_convolutions_3d() -> None:
     # Define benchmark runs
     def run_convND() -> None:
         conv(input)
+        return None
 
     def run_conv3d() -> None:
         F.conv3d(input, weight=conv3d_weight, bias=conv3d_bias)
+        return None
 
-    # define number of runs
+    # Define number of runs
     runs: int = 30
 
-    # Meassure convolution times
+    # Measure convolution times
     conv_time: float = timeit.timeit(run_convND, number=runs) / runs
     torch_conv_time: float = timeit.timeit(run_conv3d, number=runs) / runs
 
