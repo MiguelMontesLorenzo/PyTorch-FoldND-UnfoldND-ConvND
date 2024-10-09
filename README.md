@@ -1,4 +1,4 @@
-# FoldND-UnfoldND-ConvND Repository
+# PyTorch FoldND UnfoldND ConvND Repository
 
 ## Introduction
 
