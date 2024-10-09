@@ -115,7 +115,7 @@ class Fold(nn.Module):
             stride=stride,
         )
         self.kernel_size, self.dilation, self.padding, self.stride = checked_params
-        self.mask: Tensor[bool]
+        self.mask: Tensor
         self.unfold_size: Tuple[int, ...]
         self.indices: Optional[Tuple[Tensor, ...]] = None
         self.input_size: Optional[Tuple[int, ...]] = None
@@ -210,17 +210,17 @@ class Fold(nn.Module):
         # define dilated kernel size from kernel size and dilation
         dil_size: Callable[[int, int], int] = lambda k, d: k + (k - 1) * (d - 1)
         # kernel[0,...,0] element projection mask over input feature space
-        knl0mask: Tensor[bool] = torch.full(size=pdd_size, fill_value=False)
+        knl0mask: Tensor = torch.full(size=pdd_size, fill_value=False)
         zp: zip = zip(pdd_size[bN:], self.kernel_size, self.stride, self.dilation)
         lzp: list[Tuple[int, ...]] = list(zp)
         knl0mask[[slice(i - dil_size(k, d) + 1) for i, k, _, d in lzp]].logical_not_()
         # apply stride to the kernel[0,...,0] mask
-        on_stride: Tensor[bool] = torch.full_like(input=knl0mask, fill_value=False)
+        on_stride: Tensor = torch.full_like(input=knl0mask, fill_value=False)
         on_stride[tuple(slice(0, i, s) for i, _, s, _ in lzp)] = True
         knl0mask.logical_and_(on_stride)
 
         # initialize variables for the loop
-        knl_mask: Tensor[bool] = knl0mask
+        knl_mask: Tensor = knl0mask
         reps: list[int] = []
         ms: Tuple[int, ...] = pdd_size[bN:]  # to account mask size
         # iterate over kernel dimensions repeating n each along a new dimension
@@ -247,7 +247,7 @@ class Fold(nn.Module):
             reps.append(sk)
 
         # define class attributes
-        self.mask: Tensor[bool] = knl_mask
+        self.mask: Tensor = knl_mask
         self.padded_size: Tuple[int, ...] = pdd_size
 
         return None
@@ -292,7 +292,7 @@ class Fold(nn.Module):
             permutation = tuple([*range(bN), *range(oN, iN), *range(bN, oN)])
             unfold: Tensor = input.permute(permutation)
         # fold
-        mask: Tensor[bool] = self.mask.expand(size=(*batch_size, *self.mask.shape))
+        mask: Tensor = self.mask.expand(size=(*batch_size, *self.mask.shape))
         slided_unfold: Tensor = torch.zeros_like(
             input=mask, dtype=unfold.dtype, device=input.device
         )
@@ -395,7 +395,7 @@ class Unfold(nn.Module):
         )
         self.kernel_size, self.dilation, self.padding, self.stride = checked_params
 
-        self.mask: Tensor[bool]
+        self.mask: Tensor
         self.unfold_size: Tuple[int, ...]
         self.input_size: Optional[Tuple[int, ...]] = None
         self.input_size = unfold_input_check(input_size, *checked_params)
@@ -462,17 +462,17 @@ class Unfold(nn.Module):
         # define dilated kernel size from kernel size and dilation
         dil_size: Callable[[int, int], int] = lambda k, d: k + (k - 1) * (d - 1)
         # kernel[0,...,0] element projection mask over input feature space
-        knl0mask: Tensor[bool] = torch.full(size=pdd_size, fill_value=False)
+        knl0mask: Tensor = torch.full(size=pdd_size, fill_value=False)
         zp: zip = zip(pdd_size, self.kernel_size, self.stride, self.dilation)
         lzp: list[Tuple[int, ...]] = list(zp)
         knl0mask[[slice(i - dil_size(k, d) + 1) for i, k, _, d in lzp]].logical_not_()
         # apply stride to the kernel[0,...,0] mask
-        on_stride: Tensor[bool] = torch.full_like(input=knl0mask, fill_value=False)
+        on_stride: Tensor = torch.full_like(input=knl0mask, fill_value=False)
         on_stride[tuple(slice(0, i, s) for i, _, s, _ in lzp)] = True
         knl0mask.logical_and_(on_stride)
 
         # initialize variables for the loop
-        knl_mask: Tensor[bool] = knl0mask
+        knl_mask: Tensor = knl0mask
         reps: list[int] = []  # to store kernel sizes adjusted by dilation
         ms: Tuple[int, ...] = pdd_size  # to account mask size
         # iterate over kernel dimensions repeating n each along a new dimension
@@ -499,7 +499,7 @@ class Unfold(nn.Module):
             reps.append(sk)
 
         # define class attributes
-        self.mask: Tensor[bool] = knl_mask
+        self.mask: Tensor = knl_mask
         output_size: list[int] = [(i - d * (k - 1) - 1) // s + 1 for i, k, s, d in lzp]
         self.unfold_size: list[int] = reps + output_size
         self.padded_size: Tuple[int, ...] = pdd_size
@@ -538,7 +538,7 @@ class Unfold(nn.Module):
         # unfold
         broadcast_size: Tuple[int, ...]
         broadcast_size = tuple([*batch_size, *([1] * kN), *self.padded_size])
-        mask: Tensor[bool] = self.mask.expand(size=(*batch_size, *self.mask.shape))
+        mask: Tensor = self.mask.expand(size=(*batch_size, *self.mask.shape))
         input: Tensor = input.view(size=broadcast_size).expand_as(other=mask)
         if self.indices is None:
             self.indices = mask.flatten().nonzero(as_tuple=True)
