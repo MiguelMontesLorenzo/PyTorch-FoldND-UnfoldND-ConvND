@@ -136,12 +136,6 @@ output = conv(unfolded)
 folded_output = fold(output)
 ```
 
-### Considerations
-
-- **Compatibility**: Ensure that the input tensor dimensions align with the expected format based on the `kernel_position` parameter.
-- **Performance**: Utilizing `input_size` and `output_size` during initialization can lead to performance optimizations by reducing redundant calculations during the forward pass.
-- **Error Prevention**: Always validate input sizes and parameters to prevent runtime errors and ensure the integrity of convolution operations.
-
 ## Installation
 
 To get started with the ConvND repository, follow these steps to set up your development environment:
