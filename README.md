@@ -186,7 +186,7 @@ To get started with the ConvND repository, follow these steps to set up your dev
 
 ## Running Benchmarks
 
-To evaluate the performance of the custom n-dimensional convolution against PyTorch's native convolution functions, navigate to the `benchmarks` directory and execute the benchmark script:
+To evaluate the performance of the custom n-dimensional convolution against PyTorch's native convolution functions, execute the `benchmark.conv` submodule:
 
 ```bash
 python -m benchmarks.conv
