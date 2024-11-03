@@ -180,7 +180,7 @@ To get started with the ConvND repository, follow these steps to set up your dev
 4. **Install Dependencies**
 
    ```bash
-   pip install --upgrade pip
+   python -m pip install --upgrade pip
    pip install -r requirements.txt
    ```
 
