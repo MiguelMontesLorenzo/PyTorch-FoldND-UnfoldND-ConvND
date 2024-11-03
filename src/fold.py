@@ -223,7 +223,7 @@ class Fold(nn.Module):
         knl_mask: Tensor = knl0mask
         reps: list[int] = []
         ms: Tuple[int, ...] = pdd_size[bN:]  # to account mask size
-        # iterate over kernel dimensions repeating n each along a new dimension
+        # iterate over kernel dimensions repeating each n times along a new dimension
         for i, (si, sk, _, sd) in enumerate(lzp):
             # kernel window adjusted by dilation
             sk: int = dil_size(sk, sd)
@@ -475,7 +475,7 @@ class Unfold(nn.Module):
         knl_mask: Tensor = knl0mask
         reps: list[int] = []  # to store kernel sizes adjusted by dilation
         ms: Tuple[int, ...] = pdd_size  # to account mask size
-        # iterate over kernel dimensions repeating n each along a new dimension
+        # iterate over kernel dimensions repeating each n times along a new dimension
         for i, (si, sk, _, sd) in enumerate(lzp):
             # kernel window adjusted by dilation
             sk: int = dil_size(sk, sd)
