@@ -21,7 +21,7 @@ from src.utils import (
 
 
 # recognice device
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device: torch.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 class Fold(nn.Module):

@@ -11,7 +11,7 @@ from typing import Tuple
 from src.conv import Conv
 
 # recognice device
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device: torch.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 @pytest.mark.order(5)

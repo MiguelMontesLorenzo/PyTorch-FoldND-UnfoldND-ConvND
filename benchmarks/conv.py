@@ -14,7 +14,7 @@ from src.conv import Conv
 
 
 # Select device: use CUDA if available, else CPU
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device: torch.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
 

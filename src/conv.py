@@ -14,7 +14,7 @@ from src.utils import param_check, conv_param_check
 from src.fold import Unfold
 
 # recognice device
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device: torch.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 class Conv(nn.Module):
