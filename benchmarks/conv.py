@@ -2,8 +2,8 @@
 
 # PyTorch dependencies
 import torch
-from torch._tensor import Tensor
 import torch.nn.functional as F
+from torch import Tensor
 
 # Standard Library dependencies
 import timeit

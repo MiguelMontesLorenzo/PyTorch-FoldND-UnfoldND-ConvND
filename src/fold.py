@@ -3,7 +3,7 @@
 # PyTorch dependencies
 import torch
 import torch.nn as nn
-from torch._tensor import Tensor
+from torch import Tensor
 from torch.nn.functional import pad
 
 # Standard Library dependencies
@@ -18,6 +18,10 @@ from src.utils import (
     fold_output_check,
     unfold_input_check,
 )
+
+
+# recognice device
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 class Fold(nn.Module):
@@ -117,9 +121,9 @@ class Fold(nn.Module):
         self.kernel_size, self.dilation, self.padding, self.stride = checked_params
         self.mask: Tensor
         self.unfold_size: Tuple[int, ...]
-        self.indices: Optional[Tuple[Tensor, ...]] = None
-        self.input_size: Optional[Tuple[int, ...]] = None
-        self.output_size: Optional[Tuple[int, ...]] = None
+        self.indices: Union[Tuple[Tensor, ...], None] = None
+        self.input_size: Union[Tuple[int, ...], None] = None
+        self.output_size: Union[Tuple[int, ...], None] = None
         self.kernel_position: str = "last"
         self.input_size = fold_input_check(
             input_size, self.kernel_size, self.kernel_position
@@ -130,7 +134,7 @@ class Fold(nn.Module):
                     input_size=input_size, output_size=output_size, *checked_params
                 )
             self.build_mask()
-        self.indices: Optional[Tuple[Tensor, ...]] = None
+        self.indices: Union[Tensor, None] = None
         self.expanded_indices = None
         if not isinstance(kernel_position, str):
             raise TypeError(
@@ -297,8 +301,10 @@ class Fold(nn.Module):
             input=mask, dtype=unfold.dtype, device=input.device
         )
         if self.indices is None:
-            self.indices: Tuple[Tensor] = mask.flatten().nonzero(as_tuple=True)
-        slided_unfold.flatten().scatter_(0, self.indices[0], unfold.flatten())
+            self.indices = mask.flatten().nonzero(as_tuple=True)[0]
+            self.indices = self.indices.to(device=device, dtype=torch.long)
+            assert isinstance(self.indices, Tensor)
+        slided_unfold.flatten().scatter_(0, self.indices, unfold.flatten())
         reshape: list[int] = [*batch_size, *self.kernel_size, *self.padded_size]
         slided_unfold = slided_unfold.view(reshape)
         dim_reduce: list[int] = list(range(bN, oN))
@@ -308,7 +314,7 @@ class Fold(nn.Module):
         if any([not p == 0 for p in self.padding]):
             enum: enumerate = enumerate(self.padding)
             aux: list[int] = [slice(p, fold.shape[i + bN] - p) for i, p in enum]
-            fold = fold[*[slice(None) for _ in range(bN)], *aux]
+            fold = fold[tuple([slice(None) for _ in range(bN)] + aux)]
         # check correspondence with optional previously specified output size
         if self.output_size is not None:
             cond1: bool = math.prod(fold.shape) == math.prod(self.output_size)
@@ -397,11 +403,11 @@ class Unfold(nn.Module):
 
         self.mask: Tensor
         self.unfold_size: Tuple[int, ...]
-        self.input_size: Optional[Tuple[int, ...]] = None
+        self.input_size: Union[Tuple[int, ...], None] = None
         self.input_size = unfold_input_check(input_size, *checked_params)
         if input_size is not None:
             self.build_mask()
-        self.indices: Optional[Tuple[Tensor, ...]] = None
+        self.indices: Union[Tensor, None] = None
         self.expanded_indices = None
 
         return None
@@ -541,8 +547,10 @@ class Unfold(nn.Module):
         mask: Tensor = self.mask.expand(size=(*batch_size, *self.mask.shape))
         input: Tensor = input.view(size=broadcast_size).expand_as(other=mask)
         if self.indices is None:
-            self.indices = mask.flatten().nonzero(as_tuple=True)
-        flat_unfold: Tensor = input.flatten().take(index=self.indices[0])
+            self.indices = mask.flatten().nonzero(as_tuple=True)[0]
+            self.indices = self.indices.to(device=device, dtype=torch.long)
+            assert isinstance(self.indices, Tensor)
+        flat_unfold: Tensor = input.flatten().take(index=self.indices)
         unfold_size: Tuple[int, ...] = tuple([*batch_size, *self.unfold_size])
         reversed_unfold: Tensor = flat_unfold.view(size=unfold_size)
         permutation: Tuple[int, ...]

@@ -3,7 +3,7 @@
 # PyTorch dependencies
 import torch
 import torch.nn as nn
-from torch._tensor import Tensor
+from torch import Tensor
 
 # Standard Library dependencies
 from typing import Optional, Tuple

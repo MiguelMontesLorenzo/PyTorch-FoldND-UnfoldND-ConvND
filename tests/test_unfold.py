@@ -1,9 +1,13 @@
-import pytest
+# Pytorch dependencies
 import torch
-from torch._tensor import Tensor
+from torch import Tensor
 from torch.nn import Unfold as TorchUnfold
 
+# Standard Library dependencies
 from typing import Tuple
+
+# Other 3rd party dependencies
+import pytest
 
 # Internal dependencies
 from src.fold import Unfold
