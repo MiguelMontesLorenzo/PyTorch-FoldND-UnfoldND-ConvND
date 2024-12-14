@@ -6,8 +6,8 @@ Welcome to the **PyTorch FoldND UnfoldND ConvND** repository, a Python-based imp
 
 ### Key Features
 
-- **Arbitrary-Dimensional Convolution (`ConvND`)**: Implements convolution operations in any number of dimensions, extending beyond PyTorch's native 2D and 3D convolutions.
-- **Auxiliary Classes (`FoldND` and `UnfoldND`)**: Provides `FoldND` and `UnfoldND` classes necessary for the implementation and manipulation of n-dimensional convolutions.
+- **Arbitrary-Dimensional Convolution (`Conv`)**: Implements convolution operations in any number of dimensions, extending beyond PyTorch's native 2D and 3D convolutions.
+- **Auxiliary Classes (`Fold` and `Unfold`)**: Provides `Fold` and `Unfold` classes necessary for the implementation and manipulation of n-dimensional convolutions.
 - **PyTorch Integration**: All classes inherit from `torch.nn.Module`, ensuring seamless integration with existing PyTorch workflows.
 - **Python 3.12+**: Developed using Python version 3.12, ensuring compatibility with the latest Python features and optimizations.
 
@@ -47,43 +47,43 @@ FoldND-UnfoldND-ConvND/
 
 This directory contains benchmarking scripts that compare the performance of the custom n-dimensional convolution functions against PyTorch's native convolution operations in the dimensions where PyTorch provides built-in support.
 
-- **`conv.py`**: Contains benchmarks that evaluate the performance of the n-dimensional convolution (`ConvND`) against PyTorch's 2D (`conv2d`) and 3D (`conv3d`) convolution functions.
+- **`conv.py`**: Contains benchmarks that evaluate the performance of the n-dimensional convolution (`Conv`) against PyTorch's 2D (`conv2d`) and 3D (`conv3d`) convolution functions.
 
 #### `src/`
 
 The core implementations of the convolution operations and their auxiliary classes reside in this directory.
 
-- **`conv.py`**: Defines the `ConvND` module, implementing the n-dimensional convolution operation as a subclass of `torch.nn.Module`.
-- **`fold.py`**: Contains the definitions for the `FoldND` and `UnfoldND` classes, which are essential for preparing and reconstructing data for convolution operations in arbitrary dimensions.
+- **`conv.py`**: Defines the `Conv` module, implementing the n-dimensional convolution operation as a subclass of `torch.nn.Module`.
+- **`fold.py`**: Contains the definitions for the n-dimensional `Fold` and `Unfold` classes, which are essential for preparing and reconstructing data for convolution operations in arbitrary dimensions.
 - **`internal_types.py`**: Includes custom type definitions that enhance readability and maintainability through improved type hinting.
-- **`utils.py`**: Provides utility functions used for validating hyperparameters and inputs for the `FoldND`, `UnfoldND`, and `ConvND` modules.
+- **`utils.py`**: Provides utility functions used for validating hyperparameters and inputs for the `Fold`, `Unfold`, and `Conv` classes.
 - **`__init__.py`**: Initializes the `src` package, facilitating easy imports of the modules within.
 
 #### `tests/`
 
 This directory houses test suites that ensure the correctness and reliability of the implemented modules using `pytest`.
 
-- **`test_conv.py`**: Contains tests verifying the functionality and performance of the `ConvND` module.
-- **`test_fold.py`**: Includes tests for the `FoldND` class, ensuring accurate data folding operations.
-- **`test_unfold.py`**: Comprises tests for the `UnfoldND` class, validating the unfolding process.
+- **`test_conv.py`**: Contains tests verifying the functionality and performance of the `Conv` module.
+- **`test_fold.py`**: Includes tests for the `Fold` class, ensuring accurate data folding operations.
+- **`test_unfold.py`**: Comprises tests for the `Unfold` class, validating the unfolding process.
 - **`__init__.py`**: Initializes the `tests` package, enabling straightforward test discovery and execution.
 
 ## Usage Notes
 
-While the modules provided in this repository are built upon PyTorch's architecture and conventions, there are some key differences in their usage compared to PyTorch's native modules. Below are important considerations and guidelines for effectively utilizing the `FoldND`, `UnfoldND`, and `ConvND` classes.
+While the modules provided in this repository are built upon PyTorch's architecture and conventions, there are some key differences in their usage compared to PyTorch's native modules. Below are important considerations and guidelines for effectively utilizing the `Fold`, `Unfold`, and `Conv` classes.
 
 ### Differences from PyTorch's Native Modules
 
 #### 1. **N-Dimensional Operations**
 
 - **PyTorch Limitation**: PyTorch's native `torch.nn.Fold` and `torch.nn.Unfold` are limited to 2D operations.
-- **ConvND Advantage**: The `FoldND` and `UnfoldND` classes extend these operations to n-dimensions, allowing for more versatile and generalized convolution processes.
+- **Conv ND Advantage**: The `Fold` and `Unfold` classes extend these operations to n-dimensions, allowing for more versatile and generalized convolution processes.
 
 #### 2. **Class Initialization Parameters**
 
-Both `FoldND` and `UnfoldND` offer additional parameters to handle n-dimensional data effectively:
+Both `Fold` and `Unfold` offer additional parameters to handle n-dimensional data effectively:
 
-- **`kernel_position` (for `FoldND`)**:
+- **`kernel_position` (for `Fold`)**:
   - **`"last"` (default)**: Expects input dimensions in the order `(*batch_dims, *conv_output_dims, *kernel_dims)`.
   - **`"first"`**: Expects input dimensions in the order `(*batch_dims, *kernel_dims, *conv_output_dims)`.
   - **Purpose**: Provides flexibility in how input dimensions are arranged, catering to different data formats and convolution configurations.
@@ -94,13 +94,13 @@ Both `FoldND` and `UnfoldND` offer additional parameters to handle n-dimensional
 
 #### 3. **Input and Output Formats**
 
-- **`FoldND` and `UnfoldND` Output Structures**:
-  - **`FoldND`**: Reconstructs the original input from its unfolded representation, maintaining separate dimensions for kernel elements.
-  - **`UnfoldND`**: Unfolds the input data into a shape that retains kernel dimensions separately, as opposed to collapsing them into a single dimension in PyTorch's native `Unfold`.
+- **`Fold` and `Unfold` Output Structures**:
+  - **`Fold`**: Reconstructs the original input from its unfolded representation, maintaining separate dimensions for kernel elements.
+  - **`Unfold`**: Unfolds the input data into a shape that retains kernel dimensions separately, as opposed to collapsing them into a single dimension in PyTorch's native `Unfold`.
 
 - **Comparison with PyTorch**:
   - **PyTorch's `Fold`**: Typically handles input in the shape `(N, C * kernel_height * kernel_width, L)`, where `L` is the number of sliding windows per convolution input.
-  - **ConvND's `FoldND`**: Maintains separate kernel dimensions, resulting in an output shape of `(*batch_dims, *conv_output_dims, *kernel_dims)` for more intuitive handling in n-dimensional spaces.
+  - **Conv's `Fold`**: Maintains separate kernel dimensions, resulting in an output shape of `(*batch_dims, *conv_output_dims, *kernel_dims)` for more intuitive handling in n-dimensional spaces.
 
 #### 4. **Validation and Error Handling**
 
@@ -109,7 +109,7 @@ Both `FoldND` and `UnfoldND` offer additional parameters to handle n-dimensional
 
 ### Example Usage
 
-Below is a basic example demonstrating how to utilize the `ConvND` module alongside `FoldND` and `UnfoldND` for a 3D convolution operation:
+Below is a basic example demonstrating how to utilize the `Conv` module alongside `Fold` and `Unfold` for a 3D convolution operation:
 
 ```python
 import torch
