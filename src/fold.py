@@ -529,7 +529,8 @@ class Unfold(nn.Module):
             )
             self.input_size = input_size
             self.build_mask()
-        else:
+
+        if self.indices is None:
             if not input_size == self.input_size:
                 raise ValueError(
                     f"Input tensor does not match previously defined size "
@@ -537,23 +538,29 @@ class Unfold(nn.Module):
                     f"Got {input_size}, expected {self.input_size}."
                 )
 
-        # apply padding
-        aux: list[int] = [x for p in self.padding[::-1] for x in (p, p)]
-        input = pad(input=input, pad=aux, value=0)
-        # unfold
-        broadcast_size: Tuple[int, ...]
-        broadcast_size = tuple([*batch_size, *([1] * kN), *self.padded_size])
-        mask: Tensor = self.mask.expand(size=(*batch_size, *self.mask.shape))
-        input: Tensor = input.view(size=broadcast_size).expand_as(other=mask)
-        if self.indices is None:
-            self.indices = mask.flatten().nonzero(as_tuple=True)[0]
+            expanded_mask: Tensor = self.mask.expand(
+                size=(*batch_size, *self.mask.shape)
+            )
+            self.indices = expanded_mask.flatten().nonzero(as_tuple=True)[0]
             self.indices = self.indices.to(device=device, dtype=torch.long)
             assert isinstance(self.indices, Tensor)
-        flat_unfold: Tensor = input.flatten().take(index=self.indices)
-        unfold_size: Tuple[int, ...] = tuple([*batch_size, *self.unfold_size])
+
+        # apply padding
+        if not all(p == 0 for p in self.padding):
+            aux: list[int] = [x for p in self.padding[::-1] for x in (p, p)]
+            input = pad(input=input, pad=aux, value=0)
+
+        # unfold
+        broadcast_size: Tuple[int, ...] = (*batch_size, *([1] * kN), *self.padded_size)
+        expand_size: Tuple[int, ...] = (*batch_size, *self.mask.shape)
+        broadcasted_input: Tensor = input.view(size=broadcast_size)
+        expanded_input: Tensor = broadcasted_input.expand(size=expand_size)
+        flat_unfold: Tensor = torch.gather(expanded_input.flatten(), 0, self.indices)
+        unfold_size: Tuple[int, ...] = (*batch_size, *self.unfold_size)
         reversed_unfold: Tensor = flat_unfold.view(size=unfold_size)
-        permutation: Tuple[int, ...]
-        permutation = tuple([*range(bN), *range(iN, iN + kN), *range(bN, iN)])
+        permutation: Tuple[int, ...] = (*range(bN), *range(iN, iN + kN), *range(bN, iN))
         unfold: Tensor = reversed_unfold.permute(dims=permutation)
+        if not unfold.is_contiguous():
+            unfold.contiguous()
 
         return unfold

@@ -130,9 +130,7 @@ class Conv(nn.Module):
         # matmul performs better with many contracting elements
 
         output: Tensor
-        non_contracting_elements: int = unfolded[uN - kC :].numel()
-        contracting_elements: int = unfolded[: uN - kC].numel()
-        if 100 * non_contracting_elements > contracting_elements:
+        if False:
             # einsum conctraction
             idxUnf: list[int] = list(range(uN))
             idxOCh: list[int] = list(range(uN, uN + oN))
