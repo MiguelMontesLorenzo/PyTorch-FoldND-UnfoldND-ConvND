@@ -121,7 +121,6 @@ class Fold(nn.Module):
         self.kernel_size, self.dilation, self.padding, self.stride = checked_params
         self.mask: Tensor
         self.unfold_size: Tuple[int, ...]
-        self.indices: Union[Tuple[Tensor, ...], None] = None
         self.input_size: Union[Tuple[int, ...], None] = None
         self.output_size: Union[Tuple[int, ...], None] = None
         self.kernel_position: str = "last"
